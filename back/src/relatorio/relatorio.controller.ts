@@ -34,4 +34,17 @@ export class RelatorioController {
   produtoMaiorValor() {
     return this.relatorioService.produtoMaiorValor();
   }
+  @Get('clientes-resumo')
+clientesComResumo() {
+  return this.relatorioService.clientesComResumo();
+}
+@Get('historico-por-cliente')
+historicoPorCliente() {
+  return this.relatorioService.historicoPorCliente();
+}
+
+@Get('tempo-medio-compras')
+tempoMedioEntreCompras() {
+  return this.relatorioService.tempoMedioEntreCompras();
+}
 }

@@ -153,6 +153,9 @@ Base URL: `http://localhost:3000`
 | GET | /relatorios/top-clientes | Top 10 clientes que mais compraram |
 | GET | /relatorios/produto-mais-vendido | Top 10 produtos por quantidade vendida |
 | GET | /relatorios/produto-maior-valor | Top 10 produtos por valor total gerado |
+| GET | /relatorios/clientes-resumo | Clientes com total de pedidos e valor gasto |
+| GET | /relatorios/historico-por-cliente | Histórico de compras por cliente |
+| GET | /relatorios/tempo-medio-compras | Tempo médio entre compras e risco de churn |
 
 ### Exemplo GET /relatorios/vendas-por-estado
 **Resposta:**

@@ -123,4 +123,154 @@ export class RelatorioService {
       .sort((a, b) => b.valorTotal - a.valorTotal)
       .slice(0, 10);
   }
+
+async clientesComResumo() {
+  const clientes = await this.prisma.cliente.findMany({
+    include: {
+      pedidos: {
+        include: {
+          itens: {
+            include: {
+              produto: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return clientes.map((cliente) => {
+    const totalPedidos = cliente.pedidos.length;
+
+    const valorTotalGasto = cliente.pedidos.reduce((totalPedido, pedido) => {
+      const valorPedido = pedido.itens.reduce((totalItem, item) => {
+        return totalItem + item.produto.preco * item.quantidade;
+      }, 0);
+      return totalPedido + valorPedido;
+    }, 0);
+
+    const ultimoPedido = cliente.pedidos.sort(
+      (a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime()
+    )[0];
+
+    const diasSemComprar = ultimoPedido
+      ? Math.floor(
+          (new Date().getTime() - new Date(ultimoPedido.criadoEm).getTime()) /
+            (1000 * 60 * 60 * 24)
+        )
+      : null;
+
+    return {
+      id: cliente.id,
+      nome: cliente.nome,
+      email: cliente.email,
+      cidade: cliente.cidade,
+      estado: cliente.estado,
+      pais: cliente.pais,
+      totalPedidos,
+      valorTotalGasto: Number(valorTotalGasto.toFixed(2)),
+      diasSemComprar,
+    };
+  });
+}
+// Histórico de compras por cliente — quando e quanto comprou
+async historicoPorCliente() {
+  const clientes = await this.prisma.cliente.findMany({
+    include: {
+      pedidos: {
+        orderBy: { criadoEm: 'asc' },
+        include: {
+          itens: {
+            include: {
+              produto: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return clientes.map((cliente) => {
+    const historico = cliente.pedidos.map((pedido) => {
+      const valorPedido = pedido.itens.reduce((total, item) => {
+        return total + item.produto.preco * item.quantidade;
+      }, 0);
+
+      return {
+        pedidoId: pedido.id,
+        data: pedido.criadoEm,
+        valorTotal: Number(valorPedido.toFixed(2)),
+        quantidadeItens: pedido.itens.length,
+      };
+    });
+
+    return {
+      clienteId: cliente.id,
+      nome: cliente.nome,
+      email: cliente.email,
+      totalPedidos: cliente.pedidos.length,
+      historico,
+    };
+  });
+}
+
+// Tempo médio entre pedidos por cliente — base para calcular churn
+async tempoMedioEntreCompras() {
+  const clientes = await this.prisma.cliente.findMany({
+    include: {
+      pedidos: {
+        orderBy: { criadoEm: 'asc' },
+      },
+    },
+  });
+
+  return clientes.map((cliente) => {
+    const pedidos = cliente.pedidos;
+
+    // Cliente com menos de 2 pedidos não tem intervalo calculável
+    if (pedidos.length < 2) {
+      return {
+        clienteId: cliente.id,
+        nome: cliente.nome,
+        totalPedidos: pedidos.length,
+        tempoMedioDias: null,
+        risco: 'sem dados suficientes',
+      };
+    }
+
+    // Calcula intervalo em dias entre cada pedido consecutivo
+    const intervalos: number[] = [];
+    for (let i = 1; i < pedidos.length; i++) {
+      const anterior = new Date(pedidos[i - 1].criadoEm).getTime();
+      const atual = new Date(pedidos[i].criadoEm).getTime();
+      const dias = Math.floor((atual - anterior) / (1000 * 60 * 60 * 24));
+      intervalos.push(dias);
+    }
+
+    const tempoMedioDias = Math.floor(
+      intervalos.reduce((a, b) => a + b, 0) / intervalos.length
+    );
+
+    // Último pedido
+    const ultimoPedido = pedidos[pedidos.length - 1];
+    const diasSemComprar = Math.floor(
+      (new Date().getTime() - new Date(ultimoPedido.criadoEm).getTime()) /
+        (1000 * 60 * 60 * 24)
+    );
+
+    // Classifica risco de churn
+    let risco = 'baixo';
+    if (diasSemComprar > tempoMedioDias * 2) risco = 'alto';
+    else if (diasSemComprar > tempoMedioDias * 1.5) risco = 'médio';
+
+    return {
+      clienteId: cliente.id,
+      nome: cliente.nome,
+      totalPedidos: pedidos.length,
+      tempoMedioDias,
+      diasSemComprar,
+      risco,
+    };
+  });
+}
 }
