@@ -4,21 +4,21 @@ import { IsInt, IsPositive, IsOptional, IsArray, ValidateNested, ArrayMinSize } 
 export class CreateItemPedidoDto {
   @IsInt()
   @IsPositive({ message: 'ID do produto inválido' })
-  produtoId?: number;
+  produtoId!: number;
 
   @IsInt()
   @IsPositive({ message: 'Quantidade deve ser maior que zero' })
-  quantidade?: number;
+  quantidade!: number;
 }
 
 export class CreatePedidoDto {
   @IsInt()
   @IsPositive({ message: 'ID do cliente inválido' })
-  clienteId?: number;
+  clienteId!: number;
 
   @IsOptional()
   @IsInt()
-  categoriaId?: number;
+  categoriaId!: number;
 
   @IsArray()
   @ArrayMinSize(1, { message: 'O pedido deve ter pelo menos um item' })
