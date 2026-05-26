@@ -192,4 +192,9 @@ Base URL: `http://localhost:3000`
   { "nome": "Notebook", "valorTotal": 175000.00 },
   { "nome": "Monitor", "valorTotal": 45000.00 }
 ]
-```
+## Churn
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | /churn/cliente/:id | Previsão de churn de um cliente |
+| GET | /churn/todos | Previsão de churn de todos os clientes |
