@@ -14,4 +14,8 @@ export class ChurnController {
   preverChurnTodos() {
     return this.churnService.preverChurnTodos();
   }
+  @Get('scoring')
+scoringClientes() {
+  return this.churnService.scoringClientes();
+}
 }

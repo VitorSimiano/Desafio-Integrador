@@ -198,3 +198,4 @@ Base URL: `http://localhost:3000`
 |---|---|---|
 | GET | /churn/cliente/:id | Previsão de churn de um cliente |
 | GET | /churn/todos | Previsão de churn de todos os clientes |
+| GET | /churn/scoring | Scoring de propensão à compra de todos os clientes |

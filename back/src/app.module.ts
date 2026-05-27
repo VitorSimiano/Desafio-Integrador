@@ -6,10 +6,9 @@ import { ProdutoModule } from './produto/produto.module';
 import { CategoriaModule } from './categoria/categoria.module';
 import { RelatorioModule } from './relatorio/relatorio.module';
 import { ChurnModule } from './churn/churn.module';
-import { MenorModule } from './menor/menor.module';
 
 
 @Module({
-  imports: [PrismaModule, ClienteModule, PedidoModule, ProdutoModule, CategoriaModule, RelatorioModule, ChurnModule, MenorModule],
+  imports: [PrismaModule, ClienteModule, PedidoModule, ProdutoModule, CategoriaModule, RelatorioModule, ChurnModule],
 })
 export class AppModule {}
