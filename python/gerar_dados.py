@@ -4,12 +4,11 @@ import numpy as np
 np.random.seed(42)
 quantidade = 500
 
-# Gera dados aleatórios mas com lógica real
+
 total_pedidos = np.random.randint(1, 50, quantidade)
 valor_total_gasto = np.random.uniform(100, 50000, quantidade)
 dias_sem_comprar = np.random.randint(0, 365, quantidade)
 
-# Lógica de churn — cliente some se compra pouco e sumiu há muito tempo
 churn = []
 for i in range(quantidade):
     if dias_sem_comprar[i] > 180 and total_pedidos[i] < 5:

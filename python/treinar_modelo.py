@@ -13,7 +13,7 @@ df = pd.read_csv('dados_clientes.csv')
 df = df.drop_duplicates()
 print(f"Registros após remover duplicados: {len(df)}")
 
-# 3. Remove outliers com Z-Score
+# 3. Remove outliers
 from scipy import stats
 z_scores = np.abs(stats.zscore(df[['total_pedidos', 'valor_total_gasto', 'dias_sem_comprar']]))
 df = df[(z_scores < 3).all(axis=1)]
@@ -28,7 +28,7 @@ df[features] = scaler.fit_transform(df[features])
 X = df[features]
 y = df['churn']
 
-# 6. Divide treino e teste (80% treino, 20% teste)
+# 6. Divide treino e teste
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
@@ -45,7 +45,7 @@ y_pred = modelo.predict(X_test)
 print("\nResultados do modelo:")
 print(classification_report(y_test, y_pred))
 
-# 9. Salva o modelo e o scaler
+# 9. Salva o modelo
 joblib.dump(modelo, 'modelo_churn.pkl')
 joblib.dump(scaler, 'scaler.pkl')
 print("\nModelo salvo em modelo_churn.pkl")
